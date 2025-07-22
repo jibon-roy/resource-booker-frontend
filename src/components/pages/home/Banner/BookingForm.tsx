@@ -4,6 +4,8 @@ import type React from "react";
 
 import { useState } from "react";
 import { Clock, User, MapPin, AlertCircle, CheckCircle } from "lucide-react";
+import { useCreateBookingMutation } from "@/redux/features/booking/booking.api";
+import Swal from "sweetalert2";
 
 const resources = [
   { id: "conference-room-a", name: "Conference Room A", capacity: "8 people" },
@@ -20,6 +22,8 @@ export default function BookingForm() {
     endTime: "",
     requestedBy: "",
   });
+
+  const [createBooking, { isLoading }] = useCreateBookingMutation();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,10 +77,33 @@ export default function BookingForm() {
 
     setIsSubmitting(true);
 
-    console.log(formData)
+    console.log(formData);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const res = await createBooking(formData).unwrap();
+      if (res?.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Booking Created",
+          text: "Your booking has been successfully created.",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#2b7fff",
+        });
+      }
+    } catch (error) {
+      const err = error as { data?: { message?: string } };
+
+      Swal.fire({
+        icon: "error",
+        title: "Booking creation failed",
+        text: err.data?.message || "An unexpected error occurred",
+        confirmButtonText: "Try Again",
+        confirmButtonColor: "#2b7fff",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     setIsSubmitting(false);
     setSubmitSuccess(true);
@@ -259,11 +286,11 @@ export default function BookingForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full btn-primary ${
+            className={`w-full cursor-pointer btn-primary ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isSubmitting ? (
+            {isSubmitting || isLoading ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 Checking Availability...

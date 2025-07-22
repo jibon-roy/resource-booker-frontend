@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
+import ReduxStoreProvider from "@/redux/ReduxStoreProvider";
+import MyContextProvider from "@/lib/MyContextProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +23,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="min-h-screen bg-gray-50">
-          <Navigation />
-          <main>{children}</main>
+          <ReduxStoreProvider>
+            <MyContextProvider>
+              <Navigation />
+              <main>{children}</main>
+            </MyContextProvider>
+          </ReduxStoreProvider>
         </div>
       </body>
-    </html>
+    </html> 
   );
 }
