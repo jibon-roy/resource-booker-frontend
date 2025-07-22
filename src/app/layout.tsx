@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Resource Booker",
   description: "Book shared resources with conflict detection",
-  generator: "v0.dev",
+  generator: "Jibon Krishna Roy",
 };
 
 export default function RootLayout({
@@ -23,7 +23,6 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50">
           <Navigation />
           <main>{children}</main>
-          
         </div>
       </body>
     </html>

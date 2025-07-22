@@ -8,7 +8,7 @@ const BenifitSection = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-              Why Choose BookingPro?
+              Why Choose Resource Booker?
             </h2>
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
@@ -79,7 +79,7 @@ const BenifitSection = () => {
 
             <div className="space-y-4">
               <blockquote className="text-gray-700 italic">
-                &quot;BookingPro eliminated our double-booking headaches
+                &quot;Resource Booker eliminated our double-booking headaches
                 completely. The buffer time feature is genius!&quot;
               </blockquote>
               <div className="flex items-center space-x-3">

@@ -11,7 +11,7 @@ const CTASection = () => {
             Ready to Streamline Your Bookings?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of teams who trust BookingPro for conflict-free
+            Join thousands of teams who trust Resource Booker for conflict-free
             resource management
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
