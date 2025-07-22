@@ -1,7 +1,9 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState, useMemo } from "react"
-import { ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react"
+import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react";
+import { Container } from "@/components/ui-library/container";
 
 // Mock bookings data
 const mockBookings = [
@@ -37,7 +39,7 @@ const mockBookings = [
     endTime: "2024-01-17T13:00",
     requestedBy: "Emily Chen",
   },
-]
+];
 
 const resources = [
   { id: "conference-room-a", name: "Conference Room A", color: "bg-blue-500" },
@@ -45,77 +47,92 @@ const resources = [
   { id: "projector-1", name: "Projector #1", color: "bg-purple-500" },
   { id: "laptop-station", name: "Laptop Station", color: "bg-orange-500" },
   { id: "recording-studio", name: "Recording Studio", color: "bg-pink-500" },
-]
+];
 
 export default function CalendarView() {
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [selectedResource, setSelectedResource] = useState("")
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedResource, setSelectedResource] = useState("");
 
   // Get the start of the week (Monday)
   const getWeekStart = (date: Date) => {
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
-    return new Date(d.setDate(diff))
-  }
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+    return new Date(d.setDate(diff));
+  };
 
-  const weekStart = getWeekStart(currentDate)
+  const weekStart = getWeekStart(currentDate);
   const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(weekStart)
-    day.setDate(weekStart.getDate() + i)
-    return day
-  })
+    const day = new Date(weekStart);
+    day.setDate(weekStart.getDate() + i);
+    return day;
+  });
 
   const timeSlots = Array.from({ length: 12 }, (_, i) => {
-    const hour = i + 8 // Start from 8 AM
-    return `${hour.toString().padStart(2, "0")}:00`
-  })
+    const hour = i + 8; // Start from 8 AM
+    return `${hour.toString().padStart(2, "0")}:00`;
+  });
 
   const filteredBookings = useMemo(() => {
     return mockBookings.filter((booking) => {
-      const bookingDate = new Date(booking.startTime)
-      const isInWeek = weekDays.some((day) => day.toDateString() === bookingDate.toDateString())
-      const matchesResource = !selectedResource || booking.resource === selectedResource
-      return isInWeek && matchesResource
-    })
-  }, [weekDays, selectedResource])
+      const bookingDate = new Date(booking.startTime);
+      const isInWeek = weekDays.some(
+        (day) => day.toDateString() === bookingDate.toDateString()
+      );
+      const matchesResource =
+        !selectedResource || booking.resource === selectedResource;
+      return isInWeek && matchesResource;
+    });
+  }, [weekDays, selectedResource]);
 
-  const getBookingPosition = (booking: any, dayIndex: number) => {
-    const startTime = new Date(booking.startTime)
-    const endTime = new Date(booking.endTime)
-    const startHour = startTime.getHours() + startTime.getMinutes() / 60
-    const endHour = endTime.getHours() + endTime.getMinutes() / 60
+  const getBookingPosition = (booking: {
+    id?: string;
+    resource?: string;
+    resourceName?: string;
+    startTime: any;
+    endTime: any;
+    requestedBy?: string;
+  }) => {
+    const startTime = new Date(booking.startTime);
+    const endTime = new Date(booking.endTime);
+    const startHour = startTime.getHours() + startTime.getMinutes() / 60;
+    const endHour = endTime.getHours() + endTime.getMinutes() / 60;
 
-    const top = ((startHour - 8) / 12) * 100 // 8 AM is the start
-    const height = ((endHour - startHour) / 12) * 100
+    const top = ((startHour - 8) / 12) * 100; // 8 AM is the start
+    const height = ((endHour - startHour) / 12) * 100;
 
-    return { top: `${top}%`, height: `${height}%` }
-  }
+    return { top: `${top}%`, height: `${height}%` };
+  };
 
   const navigateWeek = (direction: "prev" | "next") => {
-    const newDate = new Date(currentDate)
-    newDate.setDate(currentDate.getDate() + (direction === "next" ? 7 : -7))
-    setCurrentDate(newDate)
-  }
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + (direction === "next" ? 7 : -7));
+    setCurrentDate(newDate);
+  };
 
   const getResourceColor = (resourceId: string) => {
-    const resource = resources.find((r) => r.id === resourceId)
-    return resource?.color || "bg-gray-500"
-  }
+    const resource = resources.find((r) => r.id === resourceId);
+    return resource?.color || "bg-gray-500";
+  };
 
   return (
-    <div className="space-y-6">
+    <Container className="space-y-6 my-5">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Calendar View</h1>
-        <p className="text-gray-600">Weekly overview of all resource bookings</p>
+        <p className="text-gray-600">
+          Weekly overview of all resource bookings
+        </p>
       </div>
 
       {/* Controls */}
       <div className="card">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <button onClick={() => navigateWeek("prev")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => navigateWeek("prev")}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <ChevronLeft className="w-5 h-5" />
             </button>
 
@@ -133,7 +150,10 @@ export default function CalendarView() {
               })}
             </h2>
 
-            <button onClick={() => navigateWeek("next")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => navigateWeek("next")}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
@@ -152,7 +172,10 @@ export default function CalendarView() {
               ))}
             </select>
 
-            <button onClick={() => setCurrentDate(new Date())} className="btn-secondary">
+            <button
+              onClick={() => setCurrentDate(new Date())}
+              className="btn-secondary"
+            >
               Today
             </button>
           </div>
@@ -182,11 +205,16 @@ export default function CalendarView() {
 
           {/* Day headers */}
           {weekDays.map((day, index) => (
-            <div key={index} className="p-4 bg-gray-50 text-center border-r border-gray-200 last:border-r-0">
+            <div
+              key={index}
+              className="p-4 bg-gray-50 text-center border-r border-gray-200 last:border-r-0"
+            >
               <div className="text-sm font-medium text-gray-900">
                 {day.toLocaleDateString("en-US", { weekday: "short" })}
               </div>
-              <div className="text-lg font-bold text-gray-900 mt-1">{day.getDate()}</div>
+              <div className="text-lg font-bold text-gray-900 mt-1">
+                {day.getDate()}
+              </div>
             </div>
           ))}
         </div>
@@ -195,8 +223,11 @@ export default function CalendarView() {
         <div className="grid grid-cols-8 relative">
           {/* Time slots */}
           <div className="border-r border-gray-200">
-            {timeSlots.map((time, index) => (
-              <div key={time} className="h-16 p-2 border-b border-gray-100 text-sm text-gray-600">
+            {timeSlots.map((time) => (
+              <div
+                key={time}
+                className="h-16 p-2 border-b border-gray-100 text-sm text-gray-600"
+              >
                 {time}
               </div>
             ))}
@@ -204,21 +235,24 @@ export default function CalendarView() {
 
           {/* Day columns */}
           {weekDays.map((day, dayIndex) => (
-            <div key={dayIndex} className="relative border-r border-gray-200 last:border-r-0">
+            <div
+              key={dayIndex}
+              className="relative border-r border-gray-200 last:border-r-0"
+            >
               {/* Time slot grid */}
-              {timeSlots.map((time, timeIndex) => (
+              {timeSlots.map((time) => (
                 <div key={time} className="h-16 border-b border-gray-100"></div>
               ))}
 
               {/* Bookings */}
               {filteredBookings
                 .filter((booking) => {
-                  const bookingDate = new Date(booking.startTime)
-                  return bookingDate.toDateString() === day.toDateString()
+                  const bookingDate = new Date(booking.startTime);
+                  return bookingDate.toDateString() === day.toDateString();
                 })
                 .map((booking) => {
-                  const position = getBookingPosition(booking, dayIndex)
-                  const resourceColor = getResourceColor(booking.resource)
+                  const position = getBookingPosition(booking);
+                  const resourceColor = getResourceColor(booking.resource);
 
                   return (
                     <div
@@ -230,17 +264,24 @@ export default function CalendarView() {
                         minHeight: "20px",
                       }}
                     >
-                      <div className="font-medium truncate">{booking.resourceName}</div>
-                      <div className="truncate opacity-90">{booking.requestedBy}</div>
+                      <div className="font-medium truncate">
+                        {booking.resourceName}
+                      </div>
+                      <div className="truncate opacity-90">
+                        {booking.requestedBy}
+                      </div>
                       <div className="text-xs opacity-75">
-                        {new Date(booking.startTime).toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
+                        {new Date(booking.startTime).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
             </div>
           ))}
@@ -250,14 +291,25 @@ export default function CalendarView() {
       {/* Booking Details */}
       {filteredBookings.length > 0 && (
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week's Bookings</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            This Week&apos;s Bookings
+          </h3>
           <div className="space-y-3">
             {filteredBookings.map((booking) => (
-              <div key={booking.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={booking.id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center space-x-4">
-                  <div className={`w-3 h-3 rounded-full ${getResourceColor(booking.resource)}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full ${getResourceColor(
+                      booking.resource
+                    )}`}
+                  ></div>
                   <div>
-                    <div className="font-medium text-gray-900">{booking.resourceName}</div>
+                    <div className="font-medium text-gray-900">
+                      {booking.resourceName}
+                    </div>
                     <div className="text-sm text-gray-600 flex items-center space-x-4">
                       <span className="flex items-center">
                         <User className="w-4 h-4 mr-1" />
@@ -269,11 +321,14 @@ export default function CalendarView() {
                       </span>
                       <span className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
-                        {new Date(booking.startTime).toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}{" "}
+                        {new Date(booking.startTime).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}{" "}
                         -{" "}
                         {new Date(booking.endTime).toLocaleTimeString("en-US", {
                           hour: "numeric",
@@ -289,6 +344,6 @@ export default function CalendarView() {
           </div>
         </div>
       )}
-    </div>
-  )
+    </Container>
+  );
 }

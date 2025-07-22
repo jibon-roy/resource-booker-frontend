@@ -1,7 +1,16 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Calendar, Filter, Search, Clock, User, MapPin, Trash2 } from "lucide-react"
+import { useState, useMemo } from "react";
+import {
+  Calendar,
+  Filter,
+  Search,
+  Clock,
+  User,
+  MapPin,
+  Trash2,
+} from "lucide-react";
+import { Container } from "@/components/ui-library/container";
 
 // Mock data for bookings
 const mockBookings = [
@@ -50,65 +59,74 @@ const mockBookings = [
     requestedBy: "Alex Wilson",
     status: "upcoming",
   },
-]
+];
 
-const resources = ["conference-room-a", "conference-room-b", "projector-1", "laptop-station", "recording-studio"]
+const resources = [
+  "conference-room-a",
+  "conference-room-b",
+  "projector-1",
+  "laptop-station",
+  "recording-studio",
+];
 
 export default function Dashboard() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedResource, setSelectedResource] = useState("")
-  const [selectedDate, setSelectedDate] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedResource, setSelectedResource] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const filteredBookings = useMemo(() => {
     return mockBookings.filter((booking) => {
       const matchesSearch =
         booking.requestedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.resourceName.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesResource = !selectedResource || booking.resource === selectedResource
-      const matchesDate = !selectedDate || booking.startTime.startsWith(selectedDate)
-      const matchesStatus = !selectedStatus || booking.status === selectedStatus
+        booking.resourceName.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesResource =
+        !selectedResource || booking.resource === selectedResource;
+      const matchesDate =
+        !selectedDate || booking.startTime.startsWith(selectedDate);
+      const matchesStatus =
+        !selectedStatus || booking.status === selectedStatus;
 
-      return matchesSearch && matchesResource && matchesDate && matchesStatus
-    })
-  }, [searchTerm, selectedResource, selectedDate, selectedStatus])
+      return matchesSearch && matchesResource && matchesDate && matchesStatus;
+    });
+  }, [searchTerm, selectedResource, selectedDate, selectedStatus]);
 
   const groupedBookings = useMemo(() => {
-    const grouped = filteredBookings.reduce(
-      (acc, booking) => {
-        if (!acc[booking.resource]) {
-          acc[booking.resource] = []
-        }
-        acc[booking.resource].push(booking)
-        return acc
-      },
-      {} as Record<string, typeof mockBookings>,
-    )
+    const grouped = filteredBookings.reduce((acc, booking) => {
+      if (!acc[booking.resource]) {
+        acc[booking.resource] = [];
+      }
+      acc[booking.resource].push(booking);
+      return acc;
+    }, {} as Record<string, typeof mockBookings>);
 
     // Sort bookings within each group by start time
     Object.keys(grouped).forEach((resource) => {
-      grouped[resource].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-    })
+      grouped[resource].sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+    });
 
-    return grouped
-  }, [filteredBookings])
+    return grouped;
+  }, [filteredBookings]);
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium"
+    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
     switch (status) {
       case "upcoming":
-        return `${baseClasses} bg-blue-100 text-blue-800`
+        return `${baseClasses} bg-blue-100 text-blue-800`;
       case "ongoing":
-        return `${baseClasses} bg-green-100 text-green-800`
+        return `${baseClasses} bg-green-100 text-green-800`;
       case "past":
-        return `${baseClasses} bg-gray-100 text-gray-800`
+        return `${baseClasses} bg-gray-100 text-gray-800`;
       default:
-        return baseClasses
+        return baseClasses;
     }
-  }
+  };
 
   const formatDateTime = (dateTime: string) => {
-    const date = new Date(dateTime)
+    const date = new Date(dateTime);
     return {
       date: date.toLocaleDateString("en-US", {
         weekday: "short",
@@ -120,19 +138,21 @@ export default function Dashboard() {
         minute: "2-digit",
         hour12: true,
       }),
-    }
-  }
+    };
+  };
 
   const handleDeleteBooking = (bookingId: string) => {
     // In a real app, this would make an API call
-    console.log("Delete booking:", bookingId)
-  }
+    console.log("Delete booking:", bookingId);
+  };
 
   return (
-    <div className="space-y-6">
+    <Container className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Booking Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Booking Dashboard
+        </h1>
         <p className="text-gray-600">Manage and view all resource bookings</p>
       </div>
 
@@ -162,7 +182,9 @@ export default function Dashboard() {
               <option value="">All Resources</option>
               {resources.map((resource) => (
                 <option key={resource} value={resource}>
-                  {resource.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {resource
+                    .replace("-", " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase())}
                 </option>
               ))}
             </select>
@@ -204,8 +226,12 @@ export default function Dashboard() {
               <Calendar className="w-6 h-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-              <p className="text-2xl font-bold text-gray-900">{filteredBookings.length}</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Bookings
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {filteredBookings.length}
+              </p>
             </div>
           </div>
         </div>
@@ -231,7 +257,9 @@ export default function Dashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Resources</p>
-              <p className="text-2xl font-bold text-gray-900">{Object.keys(groupedBookings).length}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {Object.keys(groupedBookings).length}
+              </p>
             </div>
           </div>
         </div>
@@ -242,23 +270,31 @@ export default function Dashboard() {
         {Object.keys(groupedBookings).length === 0 ? (
           <div className="card text-center py-12">
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-            <p className="text-gray-600">Try adjusting your filters or create a new booking.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No bookings found
+            </h3>
+            <p className="text-gray-600">
+              Try adjusting your filters or create a new booking.
+            </p>
           </div>
         ) : (
           Object.entries(groupedBookings).map(([resource, bookings]) => (
             <div key={resource} className="card">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {resource.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {resource
+                    .replace("-", " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase())}
                 </h3>
-                <span className="text-sm text-gray-500">{bookings.length} booking(s)</span>
+                <span className="text-sm text-gray-500">
+                  {bookings.length} booking(s)
+                </span>
               </div>
 
               <div className="space-y-3">
                 {bookings.map((booking) => {
-                  const startDateTime = formatDateTime(booking.startTime)
-                  const endDateTime = formatDateTime(booking.endTime)
+                  const startDateTime = formatDateTime(booking.startTime);
+                  const endDateTime = formatDateTime(booking.endTime);
 
                   return (
                     <div
@@ -269,7 +305,8 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <div className="flex items-center space-x-4 mb-2">
                             <span className={getStatusBadge(booking.status)}>
-                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                              {booking.status.charAt(0).toUpperCase() +
+                                booking.status.slice(1)}
                             </span>
                             <div className="flex items-center text-sm text-gray-600">
                               <User className="w-4 h-4 mr-1" />
@@ -298,13 +335,13 @@ export default function Dashboard() {
                         </button>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
           ))
         )}
       </div>
-    </div>
-  )
+    </Container>
+  );
 }
