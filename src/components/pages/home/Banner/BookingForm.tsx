@@ -73,6 +73,8 @@ export default function BookingForm() {
 
     setIsSubmitting(true);
 
+    console.log(formData)
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
