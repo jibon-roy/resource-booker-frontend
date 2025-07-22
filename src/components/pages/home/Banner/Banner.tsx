@@ -1,46 +1,82 @@
 "use client";
 import heroBg from "@/assets/images/herobg.png";
-import heroiamge from "@/assets/images/heroiamge.png";
+import BookingForm from "./BookingForm";
+import { Button } from "@/components/ui/buttons/button/Button";
+import { ArrowRight, Calendar } from "lucide-react";
 import { Container } from "@/components/ui-library/container";
-import Image from "next/image";
+import Link from "next/link";
 
 const Banner = () => {
   return (
-    <div
-      className="bg-cover bg-center min-h-[652px] pt-10 lg:pb-0 pb-10"
+    <section
+      className="bg-cover relative py-20 overflow-hidden bg-center min-h-[652px]"
       style={{ backgroundImage: `url(${heroBg.src})` }}
     >
-      <Container>
-        <div className="flex lg:flex-row flex-col items-center gap-[60px]">
-          <div className="flex-1">
-            <h1 className="lg:text-[50px] md:text-[40px] sm:text-[30px] text-[26px] font-bold text-black ">
-              Smart Automated{" "}
-              <span className="text-primary">‘Live’ Event Management</span> Tool
-              for Sports Clubs
-            </h1>
-            <p className="mt-[30px] mb-12 text-text-primary">
-              Two versions — one with AI mention, one without (you should
-              confirm whether AI is used)
-            </p>
-            <button
-              className="bg-primary  text-white px-[26px] py-4 rounded-[12px] text-sm font-medium hover:bg-primary-hover transition-colors duration-200 cursor-pointer"
-              onClick={() => {
-                alert("Redirecting to app store...");
-              }}
-            >
-              Try 1 Month Free
-            </button>
+      <div className="">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10"></div>
+        <Container className="relative mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                  Smart Resource
+                  <span className="text-blue-600"> Booking</span>
+                  <br />
+                  Made Simple
+                </h1>
+                <p className="text-xl max-w-2xl text-gray-600 leading-relaxed">
+                  Eliminate booking conflicts with our intelligent scheduling
+                  system. Built-in buffer time and real-time availability
+                  checking ensures smooth operations.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/dashboard">
+                  <Button
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link href="/calendar">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-blue-200 text-blue-600 hover:bg-blue-50 px-8 py-3 bg-transparent"
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Calendar view
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-blue-100">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">99.9%</div>
+                  <div className="text-sm text-gray-600">Uptime</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">10k+</div>
+                  <div className="text-sm text-gray-600">Bookings</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">500+</div>
+                  <div className="text-sm text-gray-600">Companies</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1">
+              <BookingForm />
+            </div>
           </div>
-          <div className="flex-1">
-            <Image
-              src={heroiamge}
-              alt="Hero Image"
-              className="w-full h-auto shadow-xl"
-            />
-          </div>
-        </div>
-      </Container>
-    </div>
+        </Container>
+      </div>
+    </section>
   );
 };
 
