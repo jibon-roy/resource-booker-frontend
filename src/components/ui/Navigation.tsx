@@ -18,12 +18,14 @@ export default function Navigation() {
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <Container>
         <div className="flex items-center justify-between h-16">
+          <Link href="/">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <CalendarDays className="w-5 h-5 text-white" />
             </div>
             <h1 className="text-xl font-bold text-gray-900">ResourceBooker</h1>
-          </div>
+            </div>
+          </Link>
 
           <div className="flex space-x-1">
             {navItems.map((item) => {
