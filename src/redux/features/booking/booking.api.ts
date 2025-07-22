@@ -3,21 +3,19 @@ import { baseApi } from "@/redux/api/baseApi";
 const BookingApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllBookings: builder.query({
-      query: (data) => {
+      query: (filters) => {
         const params = new URLSearchParams();
-        if (data?.queryObj) {
-          interface QueryItem {
-            name: string;
-            value: string | number | boolean;
-          }
-          data?.queryObj.forEach((item: QueryItem) => {
-            params.append(item.name, String(item.value));
-          });
-        }
+        if (filters?.searchTerm)
+          params.append("searchTerm", filters.searchTerm);
+        if (filters?.resource) params.append("resource", filters.resource);
+        if (filters?.date) params.append("date", filters.date);
+        if (filters?.status) params.append("status", filters.status);
+        params.append("page", filters?.page || "1");
+        params.append("limit", filters?.limit || "50");
+
         return {
-          url: `/bookings`,
+          url: `/bookings?${params.toString()}`,  
           method: "GET",
-          params: params,
         };
       },
       providesTags: ["booking"],

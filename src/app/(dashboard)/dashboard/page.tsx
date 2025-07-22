@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useMemo } from "react";
@@ -11,55 +12,19 @@ import {
   Trash2,
 } from "lucide-react";
 import { Container } from "@/components/ui-library/container";
+import {
+  useDeleteBookingMutation,
+  useGetAllBookingsQuery,
+} from "@/redux/features/booking/booking.api";
+import Swal from "sweetalert2";
 
-// Mock data for bookings
-const mockBookings = [
-  {
-    id: "1",
-    resource: "conference-room-a",
-    resourceName: "Conference Room A",
-    startTime: "2024-01-15T10:00",
-    endTime: "2024-01-15T11:30",
-    requestedBy: "John Smith",
-    status: "upcoming",
-  },
-  {
-    id: "2",
-    resource: "projector-1",
-    resourceName: "Projector #1",
-    startTime: "2024-01-15T14:00",
-    endTime: "2024-01-15T15:00",
-    requestedBy: "Sarah Johnson",
-    status: "ongoing",
-  },
-  {
-    id: "3",
-    resource: "conference-room-b",
-    resourceName: "Conference Room B",
-    startTime: "2024-01-14T09:00",
-    endTime: "2024-01-14T10:30",
-    requestedBy: "Mike Davis",
-    status: "past",
-  },
-  {
-    id: "4",
-    resource: "recording-studio",
-    resourceName: "Recording Studio",
-    startTime: "2024-01-16T11:00",
-    endTime: "2024-01-16T13:00",
-    requestedBy: "Emily Chen",
-    status: "upcoming",
-  },
-  {
-    id: "5",
-    resource: "laptop-station",
-    resourceName: "Laptop Station",
-    startTime: "2024-01-15T16:00",
-    endTime: "2024-01-15T17:30",
-    requestedBy: "Alex Wilson",
-    status: "upcoming",
-  },
-];
+type Booking = {
+  id: string;
+  resource: string;
+  requestedBy: string;
+  startTime: string;
+  endTime: string;
+};
 
 const resources = [
   "conference-room-a",
@@ -75,54 +40,95 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  const filteredBookings = useMemo(() => {
-    return mockBookings.filter((booking) => {
-      const matchesSearch =
-        booking.requestedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.resourceName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesResource =
-        !selectedResource || booking.resource === selectedResource;
-      const matchesDate =
-        !selectedDate || booking.startTime.startsWith(selectedDate);
-      const matchesStatus =
-        !selectedStatus || booking.status === selectedStatus;
+  // ✅ API Call (Filters as Query)
+  const { data, isLoading, refetch } = useGetAllBookingsQuery({
+    searchTerm,
+    resource: selectedResource,
+    date: selectedDate,
+    status: selectedStatus,
+    page: 1,
+    limit: 50,
+  });
 
-      return matchesSearch && matchesResource && matchesDate && matchesStatus;
+  const [deleteBooking] = useDeleteBookingMutation();
+
+  // ✅ Add Status calculation manually if backend not returning it
+  const bookings = useMemo(() => {
+    if (!data?.data) return [];
+    const now = new Date();
+
+    return data.data.map((b: Booking) => {
+      const start = new Date(b.startTime);
+      const end = new Date(b.endTime);
+
+      let status: string = "upcoming";
+      if (now >= start && now <= end) {
+        status = "ongoing";
+      } else if (now > end) {
+        status = "past";
+      }
+
+      return { ...b, status };
     });
-  }, [searchTerm, selectedResource, selectedDate, selectedStatus]);
+  }, [data]);
 
   const groupedBookings = useMemo(() => {
-    const grouped = filteredBookings.reduce((acc, booking) => {
-      if (!acc[booking.resource]) {
-        acc[booking.resource] = [];
-      }
+    const grouped = bookings.reduce((acc: any, booking: any) => {
+      if (!acc[booking.resource]) acc[booking.resource] = [];
       acc[booking.resource].push(booking);
       return acc;
-    }, {} as Record<string, typeof mockBookings>);
+    }, {});
 
-    // Sort bookings within each group by start time
-    Object.keys(grouped).forEach((resource) => {
+    Object.keys(grouped).forEach((resource) =>
       grouped[resource].sort(
-        (a, b) =>
+        (a: any, b: any) =>
           new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-      );
-    });
-
+      )
+    );
     return grouped;
-  }, [filteredBookings]);
+  }, [bookings]);
+
+  const handleDeleteBooking = async (bookingId: string) => {
+    Swal.fire({
+      title: "Confirm Deletion",
+      text: "Are you sure you want to delete this booking?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
+      confirmButtonColor: "#d33",
+    }).then(async (result) => {
+      try {
+        if (result.isConfirmed) {
+          await deleteBooking(bookingId).unwrap();
+          Swal.fire({
+            icon: "success",
+            title: "Booking Deleted",
+            text: "The booking has been successfully deleted.",
+            confirmButtonColor: "#2b7fff",
+          });
+          refetch();
+        }
+      } catch (error) {
+        if (error)
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Failed to delete booking. Please try again.",
+            confirmButtonColor: "#2b7fff",
+          });
+        return;
+      }
+    });
+  };
 
   const getStatusBadge = (status: string) => {
-    const baseClasses = "px-2 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case "upcoming":
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      case "ongoing":
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case "past":
-        return `${baseClasses} bg-gray-100 text-gray-800`;
-      default:
-        return baseClasses;
-    }
+    const base = "px-2 py-1 rounded-full text-xs font-medium";
+    return status === "ongoing"
+      ? `${base} bg-green-100 text-green-800`
+      : status === "past"
+      ? `${base} bg-gray-100 text-gray-800`
+      : `${base} bg-blue-100 text-blue-800`;
   };
 
   const formatDateTime = (dateTime: string) => {
@@ -141,14 +147,35 @@ export default function Dashboard() {
     };
   };
 
-  const handleDeleteBooking = (bookingId: string) => {
-    // In a real app, this would make an API call
-    console.log("Delete booking:", bookingId);
-  };
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(
+      (booking: {
+        requestedBy: string;
+        resource: string;
+        startTime: string | number | Date;
+        status: string;
+      }) => {
+        const matchesSearch =
+          booking.requestedBy
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          booking.resource.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesResource =
+          !selectedResource || booking.resource === selectedResource;
+        const matchesDate =
+          !selectedDate ||
+          new Date(booking.startTime).toISOString().split("T")[0] ===
+            selectedDate;
+        const matchesStatus =
+          !selectedStatus || booking.status === selectedStatus;
+
+        return matchesSearch && matchesResource && matchesDate && matchesStatus;
+      }
+    );
+  }, [bookings, searchTerm, selectedResource, selectedDate, selectedStatus]);
 
   return (
     <Container className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Booking Dashboard
@@ -156,69 +183,6 @@ export default function Dashboard() {
         <p className="text-gray-600">Manage and view all resource bookings</p>
       </div>
 
-      {/* Filters */}
-      <div className="card">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search bookings..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-field pl-10"
-            />
-          </div>
-
-          {/* Resource Filter */}
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <select
-              value={selectedResource}
-              onChange={(e) => setSelectedResource(e.target.value)}
-              className="input-field pl-10"
-            >
-              <option value="">All Resources</option>
-              {resources.map((resource) => (
-                <option key={resource} value={resource}>
-                  {resource
-                    .replace("-", " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Date Filter */}
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="input-field pl-10"
-            />
-          </div>
-
-          {/* Status Filter */}
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="input-field pl-10"
-            >
-              <option value="">All Status</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="past">Past</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card">
           <div className="flex items-center">
@@ -244,7 +208,11 @@ export default function Dashboard() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Ongoing</p>
               <p className="text-2xl font-bold text-gray-900">
-                {filteredBookings.filter((b) => b.status === "ongoing").length}
+                {
+                  filteredBookings.filter(
+                    (b: { status: string }) => b.status === "ongoing"
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -265,83 +233,152 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bookings by Resource */}
-      <div className="space-y-6">
-        {Object.keys(groupedBookings).length === 0 ? (
-          <div className="card text-center py-12">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No bookings found
-            </h3>
-            <p className="text-gray-600">
-              Try adjusting your filters or create a new booking.
-            </p>
+      {/* Filters */}
+      <div className="card">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search bookings..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input-field pl-10"
+            />
           </div>
-        ) : (
-          Object.entries(groupedBookings).map(([resource, bookings]) => (
-            <div key={resource} className="card">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <select
+              value={selectedResource}
+              onChange={(e) => setSelectedResource(e.target.value)}
+              className="input-field pl-10"
+            >
+              <option value="">All Resources</option>
+              {resources.map((resource) => (
+                <option key={resource} value={resource}>
                   {resource
                     .replace("-", " ")
                     .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </h3>
-                <span className="text-sm text-gray-500">
-                  {bookings.length} booking(s)
-                </span>
-              </div>
+                </option>
+              ))}
+            </select>
+          </div>
 
-              <div className="space-y-3">
-                {bookings.map((booking) => {
-                  const startDateTime = formatDateTime(booking.startTime);
-                  const endDateTime = formatDateTime(booking.endTime);
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="input-field pl-10"
+            />
+          </div>
 
-                  return (
-                    <div
-                      key={booking.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-4 mb-2">
-                            <span className={getStatusBadge(booking.status)}>
-                              {booking.status.charAt(0).toUpperCase() +
-                                booking.status.slice(1)}
-                            </span>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <User className="w-4 h-4 mr-1" />
-                              {booking.requestedBy}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center space-x-6 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <Calendar className="w-4 h-4 mr-1" />
-                              {startDateTime.date}
-                            </div>
-                            <div className="flex items-center">
-                              <Clock className="w-4 h-4 mr-1" />
-                              {startDateTime.time} - {endDateTime.time}
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => handleDeleteBooking(booking.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Cancel booking"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))
-        )}
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="input-field pl-10"
+            >
+              <option value="">All Status</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="past">Past</option>
+            </select>
+          </div>
+        </div>
       </div>
+
+      {isLoading ? (
+        <p className="text-center text-gray-500">Loading bookings...</p>
+      ) : (
+        <div className="space-y-6">
+          {Object.keys(groupedBookings).length === 0 ? (
+            <div className="card text-center py-12">
+              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No bookings found
+              </h3>
+              <p className="text-gray-600">
+                Try adjusting your filters or create a new booking.
+              </p>
+            </div>
+          ) : (
+            Object.entries(groupedBookings)?.map(
+              ([resource, resourceBookings]) => (
+                <div key={resource} className="card">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {resource
+                        .replace("-", " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    </h3>
+                    <span className="text-sm text-gray-500">
+                      {Array.isArray(resourceBookings)
+                        ? resourceBookings.length
+                        : 0}{" "}
+                      booking(s)
+                    </span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {Array.isArray(resourceBookings) &&
+                      resourceBookings.map((booking: any) => {
+                        const startDateTime = formatDateTime(booking.startTime);
+                        const endDateTime = formatDateTime(booking.endTime);
+
+                        return (
+                          <div
+                            key={booking.id}
+                            className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-4 mb-2">
+                                  <span
+                                    className={getStatusBadge(booking.status)}
+                                  >
+                                    {booking.status.charAt(0).toUpperCase() +
+                                      booking.status.slice(1)}
+                                  </span>
+                                  <div className="flex items-center text-sm text-gray-600">
+                                    <User className="w-4 h-4 mr-1" />
+                                    {booking.requestedBy}
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center space-x-6 text-sm text-gray-600">
+                                  <div className="flex items-center">
+                                    <Calendar className="w-4 h-4 mr-1" />
+                                    {startDateTime.date}
+                                  </div>
+                                  <div className="flex items-center">
+                                    <Clock className="w-4 h-4 mr-1" />
+                                    {startDateTime.time} - {endDateTime.time}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => handleDeleteBooking(booking.id)}
+                                className="p-2 text-gray-400 hover:text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
+                                title="Cancel booking"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )
+            )
+          )}
+        </div>
+      )}
     </Container>
   );
 }
