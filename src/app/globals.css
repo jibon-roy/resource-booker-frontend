@@ -100,3 +100,17 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #66b3ff 0%, #b88dff 100%);
 }
+
+::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(90deg, #80bfff 0%, #c5a3ff 100%);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:horizontal:hover {
+  background: linear-gradient(90deg, #66b3ff 0%, #b88dff 100%);
+}

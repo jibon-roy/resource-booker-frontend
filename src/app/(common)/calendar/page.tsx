@@ -109,7 +109,9 @@ export default function CalendarView() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-4">Loading bookings...</div>;
+    return (
+      <div className="text-center min-h-screen py-4">Loading bookings...</div>
+    );
   }
 
   if (isError) {
