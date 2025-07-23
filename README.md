@@ -77,8 +77,7 @@ pnpm dev
 bun run dev
 ```
 
-
-## 4. Run in Production 
+## 4. Run in Production
 
 ```bash
 npm run build
@@ -86,10 +85,10 @@ npm run build
 npm run start
 ```
 
+<p align="center">
 
-<div style="text-align:center">
+| ![Dashboard Preview](src/assets/thank-you-2.gif) |
+| :----------------------------------------------: |
+|    **Thanks for checking out this project!**     |
 
-<h3>Thanks for checking out this project! </h3>
-
-![Dashboard Preview](src/assets/thank-you-2.gif)
-</div>
+</p>
