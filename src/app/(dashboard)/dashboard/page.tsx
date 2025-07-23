@@ -183,7 +183,7 @@ export default function Dashboard() {
         <p className="text-gray-600">Manage and view all resource bookings</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="card">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -224,10 +224,23 @@ export default function Dashboard() {
               <MapPin className="w-6 h-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Resources</p>
+              <p className="text-sm font-medium text-gray-600">
+                Booked Resources
+              </p>
               <p className="text-2xl font-bold text-gray-900">
                 {Object.keys(groupedBookings).length}
               </p>
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-purple-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">All Resources</p>
+              <p className="text-2xl font-bold text-gray-900">5</p>
             </div>
           </div>
         </div>

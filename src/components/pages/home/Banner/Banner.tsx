@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/buttons/button/Button";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Container } from "@/components/ui-library/container";
 import Link from "next/link";
+import CountUp from "react-countup";
 
 const Banner = () => {
   return (
     <section
-      className="bg-cover relative py-20 overflow-hidden bg-center min-h-[652px]"
+      className="bg-cover relative py-12 lg:py-20 overflow-hidden bg-center min-h-[652px]"
       style={{ backgroundImage: `url(${heroBg.src})` }}
     >
       <div className="">
@@ -54,18 +55,25 @@ const Banner = () => {
                 </Link>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-3 gap-8 pt-8 border-t border-blue-100">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">99.9%</div>
+                <div className="max-md:text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    <CountUp end={99.9} decimals={1} duration={2} />%
+                  </div>
                   <div className="text-sm text-gray-600">Uptime</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">10k+</div>
+
+                <div className="max-md:text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    <CountUp end={10000} separator="," duration={2.5} />+
+                  </div>
                   <div className="text-sm text-gray-600">Bookings</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">500+</div>
+
+                <div className="max-md:text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    <CountUp end={500} separator="," duration={2} />+
+                  </div>
                   <div className="text-sm text-gray-600">Companies</div>
                 </div>
               </div>

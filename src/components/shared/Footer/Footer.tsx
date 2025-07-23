@@ -1,17 +1,17 @@
-import { Calendar } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <Link href="/">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-white" />
+                  <CalendarDays className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold">ResourceBooker</span>
               </div>
