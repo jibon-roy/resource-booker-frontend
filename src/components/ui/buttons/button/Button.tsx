@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 // Button variant styles using cva (class-variance-authority)
 const buttonVariants = cva(
-  "inline-flex items-center cursor-pointer disabled:cursor-not-allowed transition-all justify-center rounded-lg font-semibold text-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
+  "inline-flex items-center cursor-pointer disabled:cursor-not-allowed transition-all justify-center rounded-lg font-semibold text-lg transition-colors active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
   {
     variants: {
       variant: {
-        primary: "bg-secondary hover:bg-primary text-white",
+        primary: "bg-primary hover:bg-primary-hover  text-white",
         secondary: "bg-primary hover:bg-secondary text-white",
         accent: "bg-pink-500 hover:bg-pink-600 text-white",
         ghost: "bg-transparent hover:bg-gray-100 text-gray-900",

@@ -13,6 +13,7 @@ import {
 import { ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react";
 import { Container } from "@/components/ui-library/container";
 import { useGetAllBookingsQuery } from "@/redux/features/booking/booking.api";
+import { Button } from "@/components/ui/buttons/button/Button";
 
 const resources = [
   { id: "conference-room-a", name: "Conference Room A", color: "bg-blue-500" },
@@ -131,7 +132,7 @@ export default function CalendarView() {
       {/* Controls */}
       <div className="card">
         <div className="flex items-center flex-wrap gap-4 justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center lg:space-x-4">
             <button
               onClick={() => navigateWeek("prev")}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -175,12 +176,13 @@ export default function CalendarView() {
               ))}
             </select>
 
-            <button
+            <Button
+              size={"md"}
               onClick={() => setCurrentDate(new Date())}
-              className="btn-secondary"
+              className="btn-secondary cursor-pointer"
             >
               Today
-            </button>
+            </Button>
           </div>
         </div>
       </div>
