@@ -5,7 +5,7 @@ It allows users to manage bookings of conference rooms, projectors, laptops, and
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat&logo=typescript)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=flat&logo=tailwind-css)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?style=flat&logo=tailwind-css)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-blue?style=flat&logo=prisma)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=flat&logo=node.js)
 
