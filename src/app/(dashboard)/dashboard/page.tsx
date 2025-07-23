@@ -17,6 +17,7 @@ import {
   useGetAllBookingsQuery,
 } from "@/redux/features/booking/booking.api";
 import Swal from "sweetalert2";
+import Pagination from "@/components/ui/Pagination";
 
 type Booking = {
   id: string;
@@ -39,20 +40,21 @@ export default function Dashboard() {
   const [selectedResource, setSelectedResource] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(50);
 
-  // ✅ API Call (Filters as Query)
+  //  API Call
   const { data, isLoading, refetch } = useGetAllBookingsQuery({
     searchTerm,
     resource: selectedResource,
     date: selectedDate,
     status: selectedStatus,
-    page: 1,
-    limit: 50,
+    page: currentPage,
+    limit: pageSize,
   });
 
   const [deleteBooking] = useDeleteBookingMutation();
 
-  // ✅ Add Status calculation manually if backend not returning it
   const bookings = useMemo(() => {
     if (!data?.data) return [];
     const now = new Date();
@@ -390,6 +392,17 @@ export default function Dashboard() {
               )
             )
           )}
+          <div className="my-6">
+            <Pagination
+              total={data?.meta?.total || 0}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                refetch();
+              }}
+            />
+          </div>
         </div>
       )}
     </Container>
