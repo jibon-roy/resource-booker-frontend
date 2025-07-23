@@ -24,7 +24,6 @@ It allows users to manage bookings of conference rooms, projectors, laptops, and
 ✅ **Real-time Updates** – Automatic status updates (`upcoming → ongoing → past`).  
 ✅ **Secure Delete with Confirmation** – SweetAlert2 for confirmation dialogs.  
 ✅ **Clean UI** – Built with **Tailwind** for a minimal, responsive design.  
-✅ **Prisma ORM** – Type-safe database queries with PostgreSQL or MongoDB.
 
 ---
 
@@ -32,7 +31,7 @@ It allows users to manage bookings of conference rooms, projectors, laptops, and
 
 - **Frontend**: Next.js 15 (App Router), TypeScript, Redux Toolkit, TailwindCSS
 - **Backend**: Node.js, Express.js, Prisma ORM
-- **Database**: MongoDB / PostgreSQL
+- **Database**: MongoDB
 - **UI Components**: TailwindCSS, Lucide Icons, SweetAlert2
 
 ---
