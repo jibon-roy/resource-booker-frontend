@@ -81,3 +81,22 @@
     font-family: var(--font-inter);
   }
 }
+
+/* global scrollbar width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #80bfff 0%, #c5a3ff 100%);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #66b3ff 0%, #b88dff 100%);
+}
