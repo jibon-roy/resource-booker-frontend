@@ -87,9 +87,9 @@ npm run start
 ```
 
 
-<center>
+<div style="text-align:center">
 
-<h2>Thanks for checking out this project! </h2>
+<h3>Thanks for checking out this project! </h3>
 
 ![Dashboard Preview](src/assets/thank-you-2.gif)
-</center>
+</div>
