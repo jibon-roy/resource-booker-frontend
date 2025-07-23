@@ -177,7 +177,7 @@ export default function Dashboard() {
   }, [bookings, searchTerm, selectedResource, selectedDate, selectedStatus]);
 
   return (
-    <Container className="space-y-6">
+    <Container className="space-y-6 pb-10">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Booking Dashboard
